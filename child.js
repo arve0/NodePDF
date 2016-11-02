@@ -27,10 +27,16 @@ exports.exec = function(url, options, cb){
 //  console.log(stdin.join(' '));
 
   return child.exec(stdin.join(' '), function(err, stdo, stde) {
-    if ((err || stde) && !cb) {
-      throw err || stde;
+    if (stde) {
+      console.error(stdo);
+      console.error(stde);
     }
-    cb ? cb(err) : null;
+    if (cb) {
+      return cb(err);
+    }
+    if (err) {
+      throw err;
+    }
   });
 };
 
