@@ -1,23 +1,15 @@
 var webpage = require('webpage');
 var system = require('system');
 
-function contentsCb (pobj) {
-  if (!pobj || !pobj.contents) {
-    return;
-  }
-  var contentStr = pobj.contents;
-  pobj.contents = phantom.callback(function(currentPage, pages) {
-    return contentStr.replace(/\{currentPage\}/g, currentPage).replace(/\{pages\}/g, pages);
-  });
-}
+// monkey-patch console.error
+// https://github.com/ariya/phantomjs/issues/10150
+console.error = function () {
+    system.stderr.write(Array.prototype.join.call(arguments, ' ') + '\n');
+};
 
 function initializePage (options, page) {
-  contentsCb(options.paperSize.header);
-  contentsCb(options.paperSize.footer);
-
   if (options.cookies) {
     options.cookies.forEach(page.addCookie);
-    delete options.cookies;
   }
 
   for (var key in options) {
@@ -28,39 +20,31 @@ function initializePage (options, page) {
 }
 
 if (system.args.length < 2) {
-  console.error('incorrect args');
-  phantom.exit();
+  console.error('incorrect number of args');
+  phantom.exit(1);
 } else {
-  var page = webpage.create();
-  page.onLoadFinished = onLoadFinished;
+  var page;
   var options = JSON.parse(system.args[2]);
-
-  initializePage(options, page);
-
-  var urls, i;
-  if (!options.content) {
-    urls = JSON.parse(system.args[1]);
-    if (!Array.isArray(urls)) {
-      urls = [urls];
-    }
-    i = 0;
-    process();
+  var urls = JSON.parse(system.args[1]);
+  if (!Array.isArray(urls)) {
+    urls = [urls];
   }
+  var i = 0;
+
+  process();
 
   function process() {
     if (i < urls.length) {
       var url = urls[i++];
       // add extra / on windows: file://C:/url -> file:///C:/url
       url = url.replace(/file\:\/\/([A-Za-z])\:/, 'file:///$1:');
-      // free memory
-      page.close();
       // create a new page for each url
       page = webpage.create();
       page.onLoadFinished = onLoadFinished;
       initializePage(options, page);
       page.open(url);
     } else {
-      phantom.exit();
+      phantom.exit(0);
     }
   }
 
@@ -75,9 +59,10 @@ if (system.args.length < 2) {
     if (status !== 'success') {
       console.error('ERROR, status: ' + status);
       console.error('unable to load ' + urls[i]);
+      page.close();  // free memory
       process(); // recursive
     } else {
-      window.setTimeout(function(){
+      window.setTimeout(function () {
         var out = page.url;
         out = out.replace(/%20/g, ' ');
         out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
@@ -86,8 +71,9 @@ if (system.args.length < 2) {
             (out[0] == '/')) {
             out = out.substring(1);
         }
-        console.log('saving' + page.url + ' to ' + out);
+        console.log('saving ' + page.url + ' to ' + out);
         page.render(out, { format: 'pdf' });
+        page.close();  // free memory
         process();
       }, options.captureDelay || 0);
     }

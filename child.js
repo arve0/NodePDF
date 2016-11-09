@@ -13,31 +13,47 @@ var phantomjs = require('phantomjs-prebuilt');
  *  @param {Function} [cb]
  */
 exports.exec = function(url, options, cb){
-  var key;
-  var stdin = [ '"' + phantomjs.path + '"' ];
-
-  stdin.push(options.args);
-  stdin.push(shq([
+  var args = [
+    options.args,
     __dirname+'/render.js',
     JSON.stringify(url),
-    JSON.stringify(options),
-  ]));
+    JSON.stringify(options)
+  ];
 
 // run this command in shell to debug phantomjs
-//  console.log(stdin.join(' '));
+//  console.log(cmd + ' ' + args.join(' '));
 
-  return child.exec(stdin.join(' '), function(err, stdo, stde) {
-    if (stde) {
-      console.error(stdo);
-      console.error(stde);
+  var phantom = child.spawn(phantomjs.path, args);
+
+  phantom.stderr.pipe(process.stderr);
+
+  phantom.on('exit', function (code, signal) {
+    if (code) {
+      return done('Exited with code ' + code);
     }
+    done();
+  });
+
+  phantom.on('error', function (err) {
+    done(err);
+  });
+
+  // may be called from both exit and error event
+  var exited = false;
+  function done (err) {
+    if (exited) {
+      return;
+    }
+    exited = true;
     if (cb) {
+      // console.error('Failed. Try running this command:');
+      // console.error('"' + phantomjs.path + '" ' + args.join(' '));
       return cb(err);
     }
     if (err) {
       throw err;
     }
-  });
+  }
 };
 
 /**

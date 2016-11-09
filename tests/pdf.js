@@ -2,7 +2,7 @@
 
 var assert = require('assert');
 
-var Pdf = require('../index.js');
+var PDF = require('../index.js');
 var child = require('../child.js');
 var fs = require('fs');
 var path = require('path');
@@ -51,103 +51,19 @@ describe('all tests', function() {
     });
   });
 
-  describe('pdf#done() 1', function(){
-    it('fires done when finished', function(d){
-      this.timeout(20000);
-      var pdf1 = new Pdf('http://httpbin.org/');
-      pdf1.on('done', function(){
-        assert(exists('httpbin.org.pdf'));
-        d();
-      });
-      pdf1.on('error', function(msg){
-        console.log(msg);
-        assert(false);
-        d();
-      });
-    });
-  });
-
-  describe('pdf#file', function() {
-    it('renders local html files', function(d) {
-      this.timeout(5000);
-      var fixture = 'file://' + path.resolve('fixture.html');
-      var pdf1 = new Pdf(fixture);
-      pdf1.on('done', function(){
-        assert(exists('fixture.pdf'));
-        d();
-      });
-      pdf1.on('error', function(msg){
-        console.log(msg);
-        assert(false);
-        d();
-      });
-    })
-  });
-
-  describe('pdf#done() 2', function(){
-    it('fires done when ', function(d){
-      this.timeout(20000);
-      var pdf2 = new Pdf('http://www.yahoo.com', {
-        'viewportSize': {
-          'width': 3000,
-          'height': 9000
-        },
-        'paperSize': {
-          'pageFormat': 'A4',
-          'margin': {
-            'top': '2cm'
-          },
-          'header': {
-            'height': '4cm',
-            'contents': 'HEADER {currentPage} / {pages}'
-          },
-          'footer': {
-            'height': '4cm',
-            'contents': 'FOOTER {currentPage} / {pages}'
-          }
-        },
-        'zoomFactor': 1.1,
-        'cookies': [
-          {
-            'name':     'Valid-Cookie-Name 1',   /* required property */
-            'value':    'Valid-Cookie-Value 1',  /* required property */
-            'domain':   'localhost',           /* required property */
-            'path':     '/foo',
-            'httponly': true,
-            'secure':   false,
-            'expires':  (new Date()).getTime() + (1000 * 60 * 60)   /* <-- expires in 1 hour */
-          },
-          {
-            'name':     'Valid-Cookie-Name 2',
-            'value':    'Valid-Cookie-Value 2',
-            'domain':   'localhost'
-          }
-        ]
-      });
-      pdf2.on('done', function(){
-        assert(exists('www.yahoo.com.pdf'));
-        d();
-      });
-      pdf2.on('error', function(msg){
-        assert(false);
-        d();
-      });
-    });
-  });
-
   describe('pdf#render()', function(){
-    it('renders a pdf with a callback style', function(d){
+    it('renders single local file to pdf', function(d){
       this.timeout(10000);
-      Pdf.render('http://httpbin.org/html', function(err){
+      PDF('fixture.html', function(err){
         assert.equal(err, null);
-        assert(exists('httpbin.org/html.pdf'));
+        assert(exists('fixture.pdf'));
         d();
       });
     });
 
     it('renders several pages', function(d){
       this.timeout(10000);
-      Pdf.render(['http://httpbin.org/html', 'http://httpbin.org/ip'], function(err){
+      PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], function(err){
         assert.equal(err, null);
         assert(exists('httpbin.org/html.pdf'));
         assert(exists('httpbin.org/ip.pdf'));
