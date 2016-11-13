@@ -5,7 +5,7 @@
     "url": "arve0.github.io"
   },
   "name": "nodepdf-series",
-  "description": "Convert multiple urls to PDF.",
+  "description": "Convert files or urls to PDF.",
   "main": "./index.js",
   "version": "1.0.3",
   "keywords": [
