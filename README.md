@@ -1,36 +1,59 @@
 [![Build Status](https://travis-ci.org/arve0/nodepdf-series.svg?branch=v0.0.3)](https://travis-ci.org/arve0/nodepdf-series)
 # nodepdf-series
 
-Fork of [nodepdf](https://github.com/TJkrusinski/NodePDF) to support
-multiple/series of pages without spawning a new phantomjs child for every page:
+Render a list of pages to PDF:
 
 ```js
 var PDF = require('nodepdf-series');
-PDF(['http://host/page.html', 'http://host/'], function (err) {
-	// will create ./host/page.pdf and host.pdf
-	console.log('done');
+
+PDF(['http://httpbin.org', 'http://httpbin.org/get'], function (err) {
+  if (err) {
+    console.error('Something went wrong.');
+    console.error(err);
+  } else {
+    // httpbin.org.pdf and httpbin.org/get.pdf created
+    console.log('done');
+  }
 });
 ```
 
-Or create PDF from local files:
+Works with local files too. This renders all HTML-files in subdirectories of current path:
+
 ```js
 var glob = require('glob');
 var path = require('path');
 var PDF = require('nodepdf-series');
 
-glob('**/*.html', function (e, files) {
-	files = files.map(function(file){
-		return 'file://' + path.resolve(file);
-	});
+glob('**/*.html', function (error, files) {
+  if (error) {
+    throw error;
+  }
+  // append file:// and resolve path to files
+  files = files.map(file => 'file://' + path.resolve(file));
+  // render them
 	PDF(files, function (err) {
-		// will create /path/to/file1.pdf, /path/to/file2.pdf, etc
-		console.log('done');
+    if (err) {
+      console.error('Something went wrong.');
+      console.error(err);
+    } else {
+  		// now PDF-files should live beside HTML-files, for example:
+      // path/to/file1.html and path/to/file1.pdf
+      console.log('done');
+    }
 	});
 });
 ```
 
-When not spawning a new phantomjs for each page, we get some
-extra performance. Here is a test on 95 local html files:
+## Installation
+```
+npm install nodepdf-series
+```
+
+## Performance
+nodepdf-series spawns only one child of phantomjs, giving some
+extra performance compared to [nodepdf](https://github.com/TJkrusinski/NodePDF).
+Here is a test on 95 local html files:
+
 ```shell
 $ time node nodepdf.js
 real    9m32.928s
@@ -43,16 +66,41 @@ user    1m55.567s
 sys     0m5.104s
 ```
 
-## Installation
+You may also want to spread load on all CPU-cores:
 
-```
-npm install nodepdf-series
-```
+```js
+var cpus = require('os').cpus().length;
+var chunk = require('lodash.chunk');
+var each = require('async-each');
 
+var files = [
+  'path/to/file1.html', 'path/to/file5.html', 'path/to/file9.html',
+  'path/to/file2.html', 'path/to/file6.html', 'path/to/file10.html',
+  'path/to/file3.html', 'path/to/file7.html', 'path/to/file11.html',
+  'path/to/file4.html', 'path/to/file8.html', 'path/to/file12.html',
+];
+
+var chunkSize = Math.round(files.length / cpus);
+var chunks = chunk(files, chunkSize);
+
+each(chunks, function (chunk, cb) {
+  PDF(chunk, cb);
+}, function (err) {
+  if (err) {
+    console.error('Something went wrong.');
+    console.error(err);
+  } else {
+    // now PDF-files should live beside HTML-files, for example:
+    // path/to/file1.html and path/to/file1.pdf
+    console.log('done');
+  }
+});
+```
 
 ## API
 
 Signature:
+
 ```js
 PDF(pages, callback);
 PDF(pages, options, callback);
