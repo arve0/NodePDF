@@ -31,16 +31,16 @@ glob('**/*.html', function (error, files) {
   // append file:// and resolve path to files
   files = files.map(file => 'file://' + path.resolve(file));
   // render them
-	PDF(files, function (err) {
+  PDF(files, function (err) {
     if (err) {
       console.error('Something went wrong.');
       console.error(err);
     } else {
-  		// now PDF-files should live beside HTML-files, for example:
+      // now PDF-files should live beside HTML-files, for example:
       // path/to/file1.html and path/to/file1.pdf
       console.log('done');
     }
-	});
+  });
 });
 ```
 
