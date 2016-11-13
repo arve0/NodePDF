@@ -30,6 +30,8 @@
     "mocha": "*"
   },
   "scripts": {
+    "preversion": "npm test",
+    "postpublish": "git push && git push --tags",
     "test": "mocha tests"
   },
   "optionalDependencies": {},
