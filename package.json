@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/arve0/nodepdf-series",
   "dependencies": {
-    "phantomjs-prebuilt": "^2.1.13"
+    "phantomjs-prebuilt": "^2.1.14"
   },
   "devDependencies": {
     "mocha": "*"
