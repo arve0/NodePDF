@@ -7,7 +7,7 @@
   "name": "nodepdf-series",
   "description": "Convert files or urls to PDF.",
   "main": "./index.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "keywords": [
     "phantom",
     "phantomjs",
