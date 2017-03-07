@@ -49,6 +49,43 @@ glob('**/*.html', function (error, files) {
 npm install nodepdf-series
 ```
 
+## API
+
+Signature:
+
+```js
+PDF(pages, callback);
+PDF(pages, options, callback);
+```
+
+Options are whatever property the [PhantomJS page](http://phantomjs.org/api/webpage/) takes, like [`viewportSize`](http://phantomjs.org/api/webpage/property/viewport-size.html), in addition to `args` which is sent to the phantomjs process when spawning.
+
+### Default options
+```js
+var defaults = {
+  viewportSize: {
+    // this should be equal to paper size
+    width: 1050,
+    height: 1485
+  },
+  paperSize: {
+    /**
+     * A4 ratio in millimeters: 210 x 297
+     * DPI is hardcoded 72 in phantomJS.
+     * A resolution of 1050px will give 1050 / 72 * 25.4 ~ 370 mm width,
+     * which is way much larger than A4. Most printers will handle this,
+     * and scale correctly to given paper source.
+     */
+    width: 1050,
+    height: 1485,
+    orientation: 'portrait',
+    margin: '1cm'
+  },
+  args: '',
+  captureDelay: 100
+};
+```
+
 ## Performance
 nodepdf-series spawns only one child of phantomjs, giving some
 extra performance compared to [nodepdf](https://github.com/TJkrusinski/NodePDF).
@@ -97,38 +134,3 @@ each(chunks, function (chunk, cb) {
 });
 ```
 
-## API
-
-Signature:
-
-```js
-PDF(pages, callback);
-PDF(pages, options, callback);
-```
-
-Options are whatever property the [PhantomJS page](http://phantomjs.org/api/webpage/) takes, like [`viewportSize`](http://phantomjs.org/api/webpage/property/viewport-size.html), in addition to `args` which is sent to the phantomjs process when spawning.
-
-### Default options
-```js
-var defaults = {
-  viewportSize: {
-    width: 1024,
-    height: 1448
-  },
-  paperSize: {
-    width: 1024,
-    height: 1448,
-    format: 'A4',
-    orientation: 'portrait',
-    margin: {
-      top: '1cm',
-      right: '1cm',
-      bottom: '1cm',
-      left: '1cm'
-    }
-  },
-  zoomFactor: 1,
-  args: '',
-  captureDelay: 100
-};
-```
