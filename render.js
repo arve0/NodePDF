@@ -72,7 +72,13 @@ if (system.args.length < 2) {
             out = out.substring(1);
         }
         console.log('saving ' + page.url + ' to ' + out);
-        page.render(out, { format: 'pdf' });
+
+        if(options.outPath) {
+          page.render(options.outPath + '/doc' + i + 'pdf', { format: 'pdf' });
+        } else {
+          page.render(out, { format: 'pdf' });
+        }
+
         page.close();  // free memory
         process();
       }, options.captureDelay || 0);
