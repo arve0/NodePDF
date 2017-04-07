@@ -82,7 +82,8 @@ var defaults = {
     margin: '1cm'
   },
   args: '',
-  captureDelay: 100
+  captureDelay: 100,
+  outPath: '/home/user' //if you don't set this value the route is defined by the url path
 };
 ```
 
