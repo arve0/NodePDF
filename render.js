@@ -62,30 +62,38 @@ if (system.args.length < 2) {
       page.close();  // free memory
       process(); // recursive
     } else {
-      window.setTimeout(function () {
-        var out = page.url;
-        out = out.replace(/%20/g, ' ');
-        out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
-        out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
-        if ((window.navigator.userAgent.indexOf("Windows") != -1) &&
-            (out[0] == '/')) {
-            out = out.substring(1);
-        }
+        window.setTimeout(function () {
+            var out = page.url;
+            var nameFile;
+            out = out.replace(/%20/g, ' ');
+            out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
+            out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
 
+            if(options.outPath) {
+                out = out.replace(/^.*\/(.*)$/, "$1"); // remove characters before last "/"
+                if(options.fileNames && options.fileNames[i-1]) {
+                    out = options.fileNames[i-1] + '.pdf'; // assign custom file name
+                }
+                out = options.outPath + '/' + out;
+            } else {
+                if(options.fileNames && options.fileNames[i-1]) {
+                    nameFile = out.replace(/^.*\/(.*)$/, "$1");
+                    out = out.replace(nameFile, options.fileNames[i-1]); // assign custom file name
+                    out = out + '.pdf'; // assign extension file
+                }
+            }
 
-        if(options.outPath) {
-          out = out.replace(/^.*\/(.*)$/, "$1"); // remove characters before last "/"
-          out = options.outPath + '/' + out;
-          console.log('saving ' + page.url + ' to ' + out);
-          page.render(out, { format: 'pdf' });
-        } else {
-          console.log('saving ' + page.url + ' to ' + out);
-          page.render(out, { format: 'pdf' });
-        }
+            if ((window.navigator.userAgent.indexOf("Windows") != -1) &&
+                (out[0] == '/')) {
+                out = out.substring(1);
+            }
 
-        page.close();  // free memory
-        process();
-      }, options.captureDelay || 0);
+            console.log('saving ' + page.url + ' to ' + out);
+            page.render(out, { format: 'pdf' });
+
+            page.close();  // free memory
+            process();
+        }, options.captureDelay || 0);
     }
   };
 }

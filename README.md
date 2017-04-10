@@ -17,6 +17,53 @@ PDF(['http://httpbin.org', 'http://httpbin.org/get'], function (err) {
 });
 ```
 
+Render a list of pages to PDF setting out path:
+
+```js
+var PDF = require('nodepdf-series');
+
+PDF(['http://httpbin.org', 'http://httpbin.org/get'], {outPath: 'testPath'}, function (err) {
+  if (err) {
+    console.error('Something went wrong.');
+    console.error(err);
+  } else {
+    // testPath/httpbin.org.pdf and testPath/get.pdf created
+    console.log('done');
+  }
+});
+```
+
+Render a list of pages to PDF setting file names:
+
+```js
+var PDF = require('nodepdf-series');
+
+PDF(['http://httpbin.org', 'http://httpbin.org/get'], {fileNames: ['file1', 'file2']}, function (err) {
+  if (err) {
+    console.error('Something went wrong.');
+    console.error(err);
+  } else {
+    // file1.pdf and httpbin.org/file2.pdf created
+    console.log('done');
+  }
+});
+```
+Render a list of pages to PDF setting file names and out path:
+
+```js
+var PDF = require('nodepdf-series');
+
+PDF(['http://httpbin.org', 'http://httpbin.org/get'], {outPath: 'testPath', fileNames: ['file1', 'file2']}, function (err) {
+  if (err) {
+    console.error('Something went wrong.');
+    console.error(err);
+  } else {
+    // testPath/file1.pdf and testPath/file2.pdf created
+    console.log('done');
+  }
+});
+```
+
 Works with local files too. This renders all HTML-files in subdirectories of current path:
 
 ```js
@@ -83,7 +130,8 @@ var defaults = {
   },
   args: '',
   captureDelay: 100,
-  outPath: '/home/user' //if you don't set this value the route is defined by the url path
+  outPath: '/home/user', //if you don't set this value the route is defined by the url path,
+  fileNames: ['file1', 'file2'] // set the file names adding a array with the new names
 };
 ```
 
