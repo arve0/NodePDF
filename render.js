@@ -75,7 +75,7 @@ if (system.args.length < 2) {
 
         if(options.outPath) {
           out = out.replace(/^.*\/(.*)$/, "$1"); // remove characters before last "/"
-          out = options.outPath + '/' + out + '.pdf';
+          out = options.outPath + '/' + out;
           console.log('saving ' + page.url + ' to ' + out);
           page.render(out, { format: 'pdf' });
         } else {
