@@ -21,7 +21,7 @@ function exists(filename) {
 
 // clean up before and after
 describe('all tests', function() {
-  var files = ['httpbin.org.pdf', 'fixture.pdf', 'about', 'about:blank.pdf', 'www.yahoo.com.pdf', 'httpbin.org/html.pdf',  'httpbin.org/ip.pdf', 'testPath/html.pdf', 'testPath/ip.pdf', 'testPath/file1.pdf', 'testPath/file2.pdf', 'httpbin.org/file1.pdf', 'httpbin.org/file2.pdf'];
+  var files = ['httpbin.org.pdf', 'fixture.pdf', 'about', 'about:blank.pdf', 'www.yahoo.com.pdf', 'httpbin.org/html.pdf',  'httpbin.org/ip.pdf', 'httpbin.org/file1.pdf', 'httpbin.org/file2.pdf', 'testPath/html.pdf', 'testPath/ip.pdf', 'testPath/file1.pdf', 'testPath/file2.pdf'];
   function deleteAll(){
     files.forEach(function(filename){
       if (!exists(filename)) return;
@@ -71,22 +71,22 @@ describe('all tests', function() {
       });
     });
 
+    it('renders several pages with file names set', function(d){
+      this.timeout(10000);
+      PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {fileNames: ['file1', 'file2']}, function(err){
+          assert.equal(err, null);
+          assert(exists('httpbin.org/file1.pdf'));
+          assert(exists('httpbin.org/file2.pdf'));
+          d();
+      });
+    });
+
     it('renders several pages on set path', function(d){
         this.timeout(10000);
         PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {outPath: 'testPath'}, function(err){
             assert.equal(err, null);
             assert(exists('testPath/html.pdf'));
             assert(exists('testPath/ip.pdf'));
-            d();
-        });
-    });
-
-    it('renders several pages with file names set', function(d){
-        this.timeout(10000);
-        PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {fileNames: ['file1', 'file2']}, function(err){
-            assert.equal(err, null);
-            assert(exists('httpbin.org/file1.pdf'));
-            assert(exists('httpbin.org/file2.pdf'));
             d();
         });
     });
