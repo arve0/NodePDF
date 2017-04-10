@@ -82,7 +82,7 @@ describe('all tests', function() {
     });
 
     it('renders several pages on set path', function(d){
-        this.timeout(10000);
+        this.timeout(15000);
         PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {outPath: 'testPath'}, function(err){
             assert.equal(err, null);
             assert(exists('testPath/html.pdf'));
@@ -92,7 +92,7 @@ describe('all tests', function() {
     });
 
     it('renders several pages with path and file names set', function(d){
-        this.timeout(10000);
+        this.timeout(15000);
         PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {outPath: 'testPath', fileNames: ['file1', 'file2']}, function(err){
             assert.equal(err, null);
             assert(exists('testPath/file1.pdf'));
