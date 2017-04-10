@@ -71,11 +71,15 @@ if (system.args.length < 2) {
             (out[0] == '/')) {
             out = out.substring(1);
         }
-        console.log('saving ' + page.url + ' to ' + out);
+
 
         if(options.outPath) {
-          page.render(options.outPath + '/doc' + i + 'pdf', { format: 'pdf' });
+          out = out.replace(/^.*\/(.*)$/, "$1"); // remove characters before last "/"
+          out = options.outPath + '/' + out + '.pdf';
+          console.log('saving ' + page.url + ' to ' + out);
+          page.render(out, { format: 'pdf' });
         } else {
+          console.log('saving ' + page.url + ' to ' + out);
           page.render(out, { format: 'pdf' });
         }
 

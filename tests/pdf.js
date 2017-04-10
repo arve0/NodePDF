@@ -70,5 +70,15 @@ describe('all tests', function() {
         d();
       });
     });
+
+    it('renders several pages on setted path', function(d){
+        this.timeout(10000);
+        PDF(['http://httpbin.org/html', 'http://httpbin.org/ip'], {outPath: 'testPath'}, function(err){
+            assert.equal(err, null);
+            assert(exists('testPath/html.pdf'));
+            assert(exists('testPath/ip.pdf'));
+            d();
+        });
+    });
   });
 });
