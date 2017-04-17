@@ -62,20 +62,35 @@ if (system.args.length < 2) {
       page.close();  // free memory
       process(); // recursive
     } else {
-      window.setTimeout(function () {
-        var out = page.url;
-        out = out.replace(/%20/g, ' ');
-        out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
-        out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
-        if ((window.navigator.userAgent.indexOf("Windows") != -1) &&
-            (out[0] == '/')) {
-            out = out.substring(1);
-        }
-        console.log('saving ' + page.url + ' to ' + out);
-        page.render(out, { format: 'pdf' });
-        page.close();  // free memory
-        process();
-      }, options.captureDelay || 0);
+        window.setTimeout(function () {
+            var out = page.url;
+            out = out.replace(/%20/g, ' ');
+            out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
+
+            var filename = (options.fileNames && options.fileNames[i - 1]) || getFilename(out);
+            var dirname = options.outPath || getDirname(out)
+            out = dirname + '/' + filename
+            out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
+
+            if ((window.navigator.userAgent.indexOf("Windows") != -1) &&
+                (out[0] == '/')) {
+                out = out.substring(1);
+            }
+
+            console.log('saving ' + page.url + ' to ' + out);
+            page.render(out, { format: 'pdf' });
+
+            page.close();  // free memory
+            process();
+        }, options.captureDelay || 0);
     }
   };
+}
+
+function getFilename (path) {
+    return path.slice(path.lastIndexOf('/') + 1);
+}
+
+function getDirname (path) {
+    return path.slice(0, path.lastIndexOf('/'))
 }
