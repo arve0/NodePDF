@@ -100,7 +100,7 @@ var defaults = {
     margin: '1cm'
   },
   args: '',
-  captureDelay: 100,
+  captureDelay: 100
 };
 ```
 
