@@ -64,24 +64,13 @@ if (system.args.length < 2) {
     } else {
         window.setTimeout(function () {
             var out = page.url;
-            var nameFile;
             out = out.replace(/%20/g, ' ');
             out = out.replace(/^.*:\/\//, ''); // something://url -> 'url'
-            out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
 
-            if(options.outPath) {
-                out = out.replace(/^.*\/(.*)$/, "$1"); // remove characters before last "/"
-                if(options.fileNames && options.fileNames[i-1]) {
-                    out = options.fileNames[i-1] + '.pdf'; // assign custom file name
-                }
-                out = options.outPath + '/' + out;
-            } else {
-                if(options.fileNames && options.fileNames[i-1]) {
-                    nameFile = out.replace(/^.*\/(.*)$/, "$1");
-                    out = out.replace(nameFile, options.fileNames[i-1]); // assign custom file name
-                    out = out + '.pdf'; // assign extension file
-                }
-            }
+            var filename = (options.fileNames && options.fileNames[i - 1]) || getFilename(out);
+            var dirname = options.outPath || getDirname(out)
+            out = dirname + '/' + filename
+            out = out.replace(/(\.html|\/|)$/, '.pdf'); // if .html -> .pdf, else + .pdf
 
             if ((window.navigator.userAgent.indexOf("Windows") != -1) &&
                 (out[0] == '/')) {
@@ -96,4 +85,12 @@ if (system.args.length < 2) {
         }, options.captureDelay || 0);
     }
   };
+}
+
+function getFilename (path) {
+    return path.slice(path.lastIndexOf('/') + 1);
+}
+
+function getDirname (path) {
+    return path.slice(0, path.lastIndexOf('/'))
 }
