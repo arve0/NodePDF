@@ -8,60 +8,24 @@ var PDF = require('nodepdf-series');
 
 PDF(['http://httpbin.org', 'http://httpbin.org/get'], function (err) {
   if (err) {
-    console.error('Something went wrong.');
-    console.error(err);
+    throw err;
   } else {
-    // httpbin.org.pdf and httpbin.org/get.pdf created
-    console.log('done');
+    console.log('httpbin.org.pdf and httpbin.org/get.pdf created');
   }
 });
 ```
 
-Render a list of pages to PDF setting out path:
+Render to a specified path and/or file names:
 
 ```js
 var PDF = require('nodepdf-series');
 
-PDF(['http://httpbin.org', 'http://httpbin.org/get'], {outPath: 'testPath'}, function (err) {
-  if (err) {
-    console.error('Something went wrong.');
-    console.error(err);
-  } else {
-    // testPath/httpbin.org.pdf and testPath/get.pdf created
-    console.log('done');
-  }
-});
-```
-
-Render a list of pages to PDF setting file names:
-
-```js
-var PDF = require('nodepdf-series');
-
-PDF(['http://httpbin.org', 'http://httpbin.org/get'], {fileNames: ['file1', 'file2']}, function (err) {
-  if (err) {
-    console.error('Something went wrong.');
-    console.error(err);
-  } else {
-    // file1.pdf and httpbin.org/file2.pdf created
-    console.log('done');
-  }
-});
-```
-Render a list of pages to PDF setting file names and out path:
-
-```js
-var PDF = require('nodepdf-series');
-
-PDF(['http://httpbin.org', 'http://httpbin.org/get'], {outPath: 'testPath', fileNames: ['file1', 'file2']}, function (err) {
-  if (err) {
-    console.error('Something went wrong.');
-    console.error(err);
-  } else {
-    // testPath/file1.pdf and testPath/file2.pdf created
-    console.log('done');
-  }
-});
+PDF(['http://httpbin.org', 'http://httpbin.org/get'],
+    { outPath: 'testPath', fileNames: ['file1', 'file2'] },
+    function (err) {
+      if (err) throw err;
+      // testPath/file1.pdf and testPath/file2.pdf created
+    });
 ```
 
 Works with local files too. This renders all HTML-files in subdirectories of current path:
@@ -80,8 +44,7 @@ glob('**/*.html', function (error, files) {
   // render them
   PDF(files, function (err) {
     if (err) {
-      console.error('Something went wrong.');
-      console.error(err);
+      throw err;
     } else {
       // now PDF-files should live beside HTML-files, for example:
       // path/to/file1.html and path/to/file1.pdf
@@ -105,7 +68,15 @@ PDF(pages, callback);
 PDF(pages, options, callback);
 ```
 
-Options are whatever property the [PhantomJS page](http://phantomjs.org/api/webpage/) takes, like [`viewportSize`](http://phantomjs.org/api/webpage/property/viewport-size.html), in addition to `args` which is sent to the phantomjs process when spawning.
+`pages` is an array of urls.
+`options` is an object with properties:
+
+- `outPath` - Which directory to store PDFs. If not set, the current directory and the URL path will be used.
+- `fileNames` - An array of filenames to use. If not set, last part of URL will be used.
+- `args` - [Arguments](http://phantomjs.org/api/command-line.html) for the PhantomJS process.
+- Properties the [PhantomJS page](http://phantomjs.org/api/webpage/) accept, like [`viewportSize`](http://phantomjs.org/api/webpage/property/viewport-size.html).
+
+`callback` is called when the rendering is done.
 
 ### Default options
 ```js
@@ -130,8 +101,6 @@ var defaults = {
   },
   args: '',
   captureDelay: 100,
-  outPath: '/home/user', //if you don't set this value the route is defined by the url path,
-  fileNames: ['file1', 'file2'] // set the file names adding a array with the new names
 };
 ```
 
